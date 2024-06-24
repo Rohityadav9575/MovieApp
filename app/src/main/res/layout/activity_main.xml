@@ -13,41 +13,52 @@
         android:layout_height="match_parent">
 
         <ScrollView
+            android:id="@+id/scrollView2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:paddingBottom="60dp">
 
                 <com.mancj.materialsearchbar.MaterialSearchBar
+                    android:id="@+id/searchBar"
                     style="@style/MaterialSearchBarLight"
-                    android:layout_marginTop="20dp"
-                    app:mt_speechMode="true"
-                    app:mt_hint="Search Movies"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    app:mt_maxSuggestionsCount="5"
-                    app:mt_hintColor="@color/dark_blue"
-                    app:mt_textColor="@color/dark_blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/searchBar"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="16dp"
+                    app:mt_hint="Search Movies"
+                    app:mt_hintColor="@color/dark_blue"
+                    app:mt_maxSuggestionsCount="5"
                     app:mt_placeholder="Search Movies"
-                   app:mt_roundedSearchBarEnabled="true"
-                    />
-
+                    app:mt_roundedSearchBarEnabled="true"
+                    app:mt_speechMode="true"
+                    app:mt_textColor="@color/dark_blue" />
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp">
+                    android:layout_height="200dp"
+                    android:layout_marginTop="20dp">
 
                     <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewPager2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/viewPager2"/>
+                        android:paddingStart="60dp"
+                        android:paddingEnd="60dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -66,13 +77,13 @@
                     android:layout_height="match_parent">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
+                        android:id="@+id/recyclerViewBestMovies"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:paddingEnd="12dp"
-                        android:paddingStart="12dp"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -87,8 +98,8 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/recyclerView"
-                        app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+                        app:layout_constraintStart_toStartOf="@+id/recyclerViewBestMovies"
+                        app:layout_constraintTop_toTopOf="@+id/recyclerViewBestMovies" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -107,11 +118,15 @@
                     android:layout_height="match_parent">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView2"
+                        android:id="@+id/recyclerViewCategory"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:paddingStart="12dp"
                         android:paddingEnd="12dp"
-                        android:paddingStart="12dp"/>
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ProgressBar
                         android:id="@+id/progressBar2"
@@ -120,9 +135,10 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/recyclerView2"
-                        app:layout_constraintTop_toTopOf="@+id/recyclerView2" />
+                        app:layout_constraintStart_toStartOf="@+id/recyclerViewCategory"
+                        app:layout_constraintTop_toTopOf="@+id/recyclerViewCategory" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <TextView
                     android:id="@+id/textView9"
                     android:layout_width="match_parent"
@@ -135,14 +151,18 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView3"
+                        android:id="@+id/recyclerViewUpcomingMovies"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:paddingStart="12dp"
                         android:paddingEnd="12dp"
-                        android:paddingStart="12dp"/>
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ProgressBar
                         android:id="@+id/progressBar3"
@@ -151,32 +171,35 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/recyclerView3"
-                        app:layout_constraintTop_toTopOf="@+id/recyclerView3" />
+                        app:layout_constraintStart_toStartOf="@+id/recyclerViewUpcomingMovies"
+                        app:layout_constraintTop_toTopOf="@+id/recyclerViewUpcomingMovies" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
         </ScrollView>
+
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
 
-                <com.google.android.material.bottomappbar.BottomAppBar
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:id="@+id/bottomAppBar"
-                    android:gravity="bottom" />
-                    <com.google.android.material.bottomnavigation.BottomNavigationView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/dark_blue"
-                        app:labelVisibilityMode="selected"
-                        app:menu="@menu/bottom_navigation_menu"/>
+            <com.google.android.material.bottomappbar.BottomAppBar
+                android:id="@+id/bottomAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="bottom" />
 
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/dark_blue"
+                app:labelVisibilityMode="selected"
+                app:itemIconTint="@color/white"
+                app:itemTextColor="@color/white"
+                app:menu="@menu/bottom_navigation_menu" />
 
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -20,17 +20,13 @@ import com.example.movieapp.R;
 import java.util.List;
 
 public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderViewHolder> {
-    private List<SliderModel> sliderModelList;
-    private Context context;
-    private ViewPager2 viewPager2;
+    private final List<SliderModel> sliderModelList;
+    private final Context context;
+    private final ViewPager2 viewPager2;
 
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
-        }
-    };
+
+
 
     public SliderAdapter(List<SliderModel> sliderModelList, Context context, ViewPager2 viewPager2) {
         this.sliderModelList = sliderModelList;
@@ -76,5 +72,13 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
             Glide.with(context).load(sliderModel.getImage()).apply(options).into(sliderimage);
         }
     }
+    private Runnable runnable=new Runnable() {
+        @Override
+        public void run() {
+           sliderModelList.addAll(sliderModelList);
+           notifyDataSetChanged();
+
+        }
+    };
 
 }
