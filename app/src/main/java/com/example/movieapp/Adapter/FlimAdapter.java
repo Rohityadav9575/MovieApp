@@ -1,11 +1,7 @@
 package com.example.movieapp.Adapter;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +16,18 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.movieapp.Activities.DetailActivity;
-import com.example.movieapp.Model.FilmList;
+import com.example.movieapp.Model.FilmDetails;
+import com.example.movieapp.Model.FlimList;
+import com.example.movieapp.Model.Result;
 import com.example.movieapp.R;
 
-public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
-   FilmList items;
-   Context context;
+import java.util.List;
 
-    public FlimAdapter(FilmList items, Context context) {
+public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
+    private List<Result> items;
+    private Context context;
+
+    public FlimAdapter(List<Result> items, Context context) {
         this.items = items;
         this.context = context;
     }
@@ -36,32 +36,37 @@ public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view=layoutInflater.inflate(R.layout.viewholder_film,parent,false);
+        View view = layoutInflater.inflate(R.layout.viewholder_film, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int actualposition=holder.getAbsoluteAdapterPosition();
-    holder.title.setText(items.getData().get(actualposition).getTitle());
-        RequestOptions requestOptions=new RequestOptions();
-        requestOptions.transform(new CenterCrop(),new RoundedCorners(30));
-        Glide.with(context).load(items.getData().get(actualposition).getPoster()).apply(requestOptions).into(holder.pic);
+        Result movie = items.get(position);
+        holder.title.setText(movie.getTitle());
+
+        RequestOptions requestOptions = new RequestOptions()
+                .transform(new CenterCrop(), new RoundedCorners(30));
+
+        Glide.with(context)
+                .load(movie.getPosterPath())
+                .apply(requestOptions)
+                .into(holder.pic);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent=new Intent(context, DetailActivity.class);
-               intent.putExtra("id",items.getData().get(actualposition).getId());
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("id", movie.getId());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               context.startActivity(intent);
+                context.startActivity(intent);
             }
         });
-
     }
 
     @Override
     public int getItemCount() {
-        return items.getData().size();
+        return items.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -70,9 +75,8 @@ public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            title=itemView.findViewById(R.id.film_title);
-            pic=itemView.findViewById(R.id.flim_image);
+            title = itemView.findViewById(R.id.film_title);
+            pic = itemView.findViewById(R.id.flim_image);
         }
     }
-
 }
