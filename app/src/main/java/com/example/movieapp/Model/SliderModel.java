@@ -1,17 +1,17 @@
 package com.example.movieapp.Model;
 
 public class SliderModel {
-    private String image;
+    private int image;
 
-    public String getImage() {
+    public int getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(int image) {
         this.image = image;
     }
 
-    public SliderModel(String image) {
+    public SliderModel(int image) {
         this.image = image;
     }
 }

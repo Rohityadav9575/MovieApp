@@ -1,6 +1,7 @@
 package com.example.movieapp.Activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -13,13 +14,20 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.movieapp.Adapter.CategoryAdapter;
 import com.example.movieapp.Adapter.FlimAdapter;
 import com.example.movieapp.Adapter.GenresAdapter;
 import com.example.movieapp.Adapter.SliderAdapter;
 import com.example.movieapp.Model.FilmDetails;
 import com.example.movieapp.Model.FlimList;
+import com.example.movieapp.Model.ImageFetch;
+import com.example.movieapp.Model.Poster;
 import com.example.movieapp.Model.Result;
+
 import com.example.movieapp.Model.SliderModel;
 import com.example.movieapp.R;
 
@@ -40,24 +48,20 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar, progressBar2, progressBar3;
     private GenresAdapter genresAdapter;
     private TMDbApi tmDbApi;
+    private Handler sliderhandler=new Handler();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         sliderModelList = new ArrayList<>();
         initView();
         setupRetrofit();
-
         banner();
         fetchBestMovies();
-
         genresAdapter = new GenresAdapter(new ArrayList<>()); // Properly initialize genresAdapter
         recyclerViewCategory.setAdapter(genresAdapter); // Set the adapter to recyclerViewCategory
-
-
         fetchCategories();
         fetchUpcomingMovies();
     }
@@ -79,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     FlimList result = response.body();
                     List<Result> movies = result.getResults();
-
-
-
                     FlimAdapter adapter = new FlimAdapter(movies, MainActivity.this);
                     recyclerViewBestMovies.setAdapter(adapter);
                 } else {
@@ -120,16 +121,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchUpcomingMovies() {
         progressBar3.setVisibility(View.VISIBLE);
-        tmDbApi.getUpcomingMovies("9c72ae3a243a3fbc3ad44bf91dd5d6843", 3).enqueue(new Callback<FlimList>() {
+        tmDbApi.getUpcomingMovies("c72ae3a243a3fbc3ad44bf91dd5d6843", 3).enqueue(new Callback<FlimList>() {
             @Override
             public void onResponse(@NonNull Call<FlimList> call, @NonNull Response<FlimList> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     FlimList result = response.body();
                     List<Result> movies = result.getResults();
-
-                    // Iterate through each FlimList in Result and add its FilmDetails to movies list
-
-
                     FlimAdapter adapter = new FlimAdapter(movies, MainActivity.this);
                     recyclerViewUpcomingMovies.setAdapter(adapter);
                 } else {
@@ -148,50 +145,58 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void banner() {
+        sliderModelList.add(new SliderModel(R.drawable.wide1));
+        sliderModelList.add(new SliderModel(R.drawable.wide));
+        sliderModelList.add(new SliderModel(R.drawable.wide3));
+        sliderModelList.add(new SliderModel(R.drawable.slider1));
+        sliderModelList.add(new SliderModel(R.drawable.slider2));
+        sliderModelList.add(new SliderModel(R.drawable.slider3));
 
-
-        viewPager2.setAdapter(new SliderAdapter(sliderModelList, this, viewPager2));
+        viewPager2.setAdapter(new SliderAdapter(sliderModelList,getApplicationContext(),viewPager2));
         viewPager2.setClipToPadding(true);
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
 
-        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        CompositePageTransformer compositePageTransformer=new CompositePageTransformer();
         compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-        compositePageTransformer.addTransformer((page, position) -> {
-            float r = 1 - Math.abs(position);
-            page.setScaleY(0.85f + r * 0.15f);
-        });
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r=1-Math.abs(position);
+                page.setScaleY(0.85f+r*0.15f);
 
+            }
+
+
+        });
         viewPager2.setPageTransformer(compositePageTransformer);
         viewPager2.setCurrentItem(1);
-
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                viewPager2.removeCallbacks(sliderRunnable);
+                sliderhandler.removeCallbacks(sliderRunnable);
             }
         });
     }
-
-    private Runnable sliderRunnable = new Runnable() {
+    private  Runnable sliderRunnable=new Runnable() {
         @Override
         public void run() {
-            viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1, true);
+            viewPager2.setCurrentItem(viewPager2.getCurrentItem()+1);
+
         }
     };
 
     @Override
     protected void onPause() {
         super.onPause();
-        viewPager2.removeCallbacks(sliderRunnable);
+        sliderhandler.removeCallbacks(sliderRunnable);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
-        viewPager2.postDelayed(sliderRunnable, 2000);
+        sliderhandler.postDelayed(sliderRunnable,2000);
     }
 
     private void initView() {
@@ -199,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewBestMovies = findViewById(R.id.recyclerViewBestMovies);
         recyclerViewUpcomingMovies = findViewById(R.id.recyclerViewUpcomingMovies);
         recyclerViewCategory = findViewById(R.id.recyclerViewCategory);
-
         recyclerViewBestMovies.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewUpcomingMovies.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
