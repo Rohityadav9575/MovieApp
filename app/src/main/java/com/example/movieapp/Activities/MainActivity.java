@@ -17,6 +17,7 @@ import com.example.movieapp.Adapter.CategoryAdapter;
 import com.example.movieapp.Adapter.FlimAdapter;
 import com.example.movieapp.Adapter.GenresAdapter;
 import com.example.movieapp.Adapter.SliderAdapter;
+import com.example.movieapp.Model.FilmDetails;
 import com.example.movieapp.Model.FlimList;
 import com.example.movieapp.Model.Result;
 import com.example.movieapp.Model.SliderModel;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private GenresAdapter genresAdapter;
     private TMDbApi tmDbApi;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
         banner();
         fetchBestMovies();
 
-        CategoryAdapter genresAdapter = new CategoryAdapter(new ArrayList<>(),this);
-        recyclerViewCategory.setAdapter(genresAdapter);
+        genresAdapter = new GenresAdapter(new ArrayList<>()); // Properly initialize genresAdapter
+        recyclerViewCategory.setAdapter(genresAdapter); // Set the adapter to recyclerViewCategory
 
 
         fetchCategories();
@@ -71,14 +73,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchBestMovies() {
         progressBar.setVisibility(View.VISIBLE);
-        tmDbApi.getPopularMovies("9127d2fe3bff62b14d19c160fa9e7c11", 1).enqueue(new Callback<FlimList>() {
+        tmDbApi.getBestMovies("c72ae3a243a3fbc3ad44bf91dd5d6843", 1).enqueue(new Callback<FlimList>() {
             @Override
             public void onResponse(@NonNull Call<FlimList> call, @NonNull Response<FlimList> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    FlimList list=response.body();
-                    List<Result> movies=list.getResults();
+                    FlimList result = response.body();
+                    List<Result> movies = result.getResults();
 
-                    // Assuming Result directly contains list of FilmDetails
+
 
                     FlimAdapter adapter = new FlimAdapter(movies, MainActivity.this);
                     recyclerViewBestMovies.setAdapter(adapter);
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
  private void fetchCategories() {
      progressBar2.setVisibility(View.VISIBLE);
-     tmDbApi.getGenres("9127d2fe3bff62b14d19c160fa9e7c11").enqueue(new Callback<GenresResponse>() {
+     tmDbApi.getCategories("c72ae3a243a3fbc3ad44bf91dd5d6843").enqueue(new Callback<GenresResponse>() {
          @Override
          public void onResponse(@NonNull Call<GenresResponse> call, @NonNull Response<GenresResponse> response) {
              if (response.isSuccessful() && response.body() != null) {
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchUpcomingMovies() {
         progressBar3.setVisibility(View.VISIBLE);
-        tmDbApi.getUpcomingMovies("9127d2fe3bff62b14d19c160fa9e7c11", 3).enqueue(new Callback<FlimList>() {
+        tmDbApi.getUpcomingMovies("9c72ae3a243a3fbc3ad44bf91dd5d6843", 3).enqueue(new Callback<FlimList>() {
             @Override
             public void onResponse(@NonNull Call<FlimList> call, @NonNull Response<FlimList> response) {
                 if (response.isSuccessful() && response.body() != null) {
