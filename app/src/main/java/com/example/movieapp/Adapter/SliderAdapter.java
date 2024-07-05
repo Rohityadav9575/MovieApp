@@ -37,19 +37,19 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
     @NonNull
     @Override
     public SliderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-       LayoutInflater layoutInflater = LayoutInflater.from(context);
-       View view=layoutInflater.inflate(R.layout.slider_item,parent,false);
-       return new SliderViewHolder(view);
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View view=layoutInflater.inflate(R.layout.slider_item,parent,false);
+        return new SliderViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SliderViewHolder holder, int position) {
-      holder.setImage(sliderModelList.get(position));
-      if(position==sliderModelList.size()-2){
-          viewPager2.post(runnable);
+        holder.setImage(sliderModelList.get(position));
+        if(position==sliderModelList.size()-2){
+            viewPager2.post(runnable);
 
-      }
-      
+        }
+
 
     }
 
@@ -75,8 +75,8 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
     private Runnable runnable=new Runnable() {
         @Override
         public void run() {
-           sliderModelList.addAll(sliderModelList);
-           notifyDataSetChanged();
+            sliderModelList.addAll(sliderModelList);
+            notifyDataSetChanged();
 
         }
     };

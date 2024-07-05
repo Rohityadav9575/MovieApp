@@ -1,14 +1,12 @@
-
-
 package com.example.movieapp.Model;
 
 import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import javax.annotation.processing.Generated;
 
-public class FilmDetails {
+public class Result {
 
     @SerializedName("adult")
     @Expose
@@ -16,25 +14,12 @@ public class FilmDetails {
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
-    @SerializedName("belongs_to_collection")
+    @SerializedName("genre_ids")
     @Expose
-    private Object belongsToCollection;
-    @SerializedName("budget")
-    @Expose
-    private Integer budget;
-
-    @SerializedName("homepage")
-    @Expose
-    private String homepage;
+    private List<Integer> genreIds;
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("imdb_id")
-    @Expose
-    private String imdbId;
-    @SerializedName("origin_country")
-    @Expose
-    private List<String> originCountry;
     @SerializedName("original_language")
     @Expose
     private String originalLanguage;
@@ -50,23 +35,9 @@ public class FilmDetails {
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
-
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
-    @SerializedName("revenue")
-    @Expose
-    private Integer revenue;
-    @SerializedName("runtime")
-    @Expose
-    private Integer runtime;
-
-    @SerializedName("status")
-    @Expose
-    private String status;
-    @SerializedName("tagline")
-    @Expose
-    private String tagline;
     @SerializedName("title")
     @Expose
     private String title;
@@ -96,31 +67,12 @@ public class FilmDetails {
         this.backdropPath = backdropPath;
     }
 
-    public Object getBelongsToCollection() {
-        return belongsToCollection;
+    public List<Integer> getGenreIds() {
+        return genreIds;
     }
 
-    public void setBelongsToCollection(Object belongsToCollection) {
-        this.belongsToCollection = belongsToCollection;
-    }
-
-    public Integer getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Integer budget) {
-        this.budget = budget;
-    }
-
-
-
-
-    public String getHomepage() {
-        return homepage;
-    }
-
-    public void setHomepage(String homepage) {
-        this.homepage = homepage;
+    public void setGenreIds(List<Integer> genreIds) {
+        this.genreIds = genreIds;
     }
 
     public Integer getId() {
@@ -129,22 +81,6 @@ public class FilmDetails {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getImdbId() {
-        return imdbId;
-    }
-
-    public void setImdbId(String imdbId) {
-        this.imdbId = imdbId;
-    }
-
-    public List<String> getOriginCountry() {
-        return originCountry;
-    }
-
-    public void setOriginCountry(List<String> originCountry) {
-        this.originCountry = originCountry;
     }
 
     public String getOriginalLanguage() {
@@ -187,55 +123,12 @@ public class FilmDetails {
         this.posterPath = posterPath;
     }
 
-
-
-
-
-
-
-
     public String getReleaseDate() {
         return releaseDate;
     }
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
-    }
-
-    public Integer getRevenue() {
-        return revenue;
-    }
-
-    public void setRevenue(Integer revenue) {
-        this.revenue = revenue;
-    }
-
-    public Integer getRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(Integer runtime) {
-        this.runtime = runtime;
-    }
-
-
-
-
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getTagline() {
-        return tagline;
-    }
-
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
     }
 
     public String getTitle() {
@@ -271,20 +164,3 @@ public class FilmDetails {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

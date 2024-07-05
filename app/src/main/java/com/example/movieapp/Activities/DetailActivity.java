@@ -1,6 +1,7 @@
 package com.example.movieapp.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -16,113 +17,119 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.movieapp.Adapter.ActorList;
 import com.example.movieapp.Adapter.GenresAdapter;
 import com.example.movieapp.Model.FilmDetails;
+
 import com.example.movieapp.R;
-import com.google.gson.Gson;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
-    private ProgressBar progressBarfilm,progressBaractor;
-    private TextView title,MovieRatTxt,MovieDescTxt,MovieCastInfo,MovieTime;
-   private  RecyclerView.Adapter actorlist,catogorylist;
-    private RecyclerView recyclerViewactorlist,recyclerViewcatogorylist;
-    private int idfilm;
-    private ImageButton back,favorite;
+    private ProgressBar progressBarfilm, progressBaractor;
+    private TextView title, MovieRatTxt, MovieDescTxt, MovieCastInfo, MovieTime;
+    private RecyclerView recyclerViewactorlist, recyclerViewcatogorylist;
+    private ImageButton back, favorite;
     private NestedScrollView nestedScrollView;
     private ImageView moviesimage;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_detail);
-        idfilm=getIntent().getIntExtra("id",1);
-        initViews();
-        sendrequest();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
 
-    private void sendrequest() {
-        mRequestQueue = Volley.newRequestQueue(this);
-        progressBarfilm.setVisibility(View.VISIBLE);
-        progressBaractor.setVisibility(View.VISIBLE);
-       nestedScrollView.setVisibility(View.GONE);
-        mStringRequest=new StringRequest(Request.Method.GET, "https://https://moviesapi.ir/api/v1/movies/" + idfilm, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Gson gson=new Gson();
-                progressBarfilm.setVisibility(View.GONE);
-                progressBaractor.setVisibility(View.GONE);
-                nestedScrollView.setVisibility(View.VISIBLE);
-                FilmDetails filmDetails=gson.fromJson(response, FilmDetails.class);
-                Glide.with(DetailActivity.this).load(filmDetails.getPoster()).into(moviesimage);
-                title.setText(filmDetails.getTitle());
-                MovieRatTxt.setText(filmDetails.getImdbId());
-                MovieDescTxt.setText(filmDetails.getPlot());
-                MovieCastInfo.setText(filmDetails.getActors());
-                if(filmDetails.getImages()!=null){
-                    actorlist=new ActorList(filmDetails.getImages());
-                    recyclerViewactorlist.setAdapter(actorlist);
+            super.onCreate(savedInstanceState);
+            EdgeToEdge.enable(this);
+            setContentView(R.layout.activity_detail);
+
+            // Initialize views
+            initViews();
+
+            // Get movie ID from intent
+            int idfilm = getIntent().getIntExtra("id", 1);
+
+            // Make API call to fetch movie details
+            fetchMovieDetails(idfilm);
+
+            // Apply window insets listener for system bars
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
+
+        private void fetchMovieDetails(int idfilm) {
+            TMDbApi tmDbApi = RetrofitClientInstance.getRetrofitInstance().create(TMDbApi.class);
+            Call<FilmDetails> call = tmDbApi.getMovieDetail(idfilm, "9127d2fe3bff62b14d19c160fa9e7c11");
+
+            progressBarfilm.setVisibility(View.VISIBLE);
+            progressBaractor.setVisibility(View.VISIBLE);
+            nestedScrollView.setVisibility(View.GONE);
+
+            call.enqueue(new Callback<FilmDetails>() {
+                @Override
+                public void onResponse(Call<FilmDetails> call, Response<FilmDetails> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        FilmDetails filmDetails = response.body();
+
+                        progressBarfilm.setVisibility(View.GONE);
+                        progressBaractor.setVisibility(View.GONE);
+                        nestedScrollView.setVisibility(View.VISIBLE);
+
+                        // Bind data to views
+                        bindMovieDetails(filmDetails);
+                    } else {
+                        Log.e("DetailActivity", "Failed to fetch movie details");
+                        progressBarfilm.setVisibility(View.GONE);
+                        progressBaractor.setVisibility(View.GONE);
+                    }
                 }
-                if(filmDetails.getGenres()!=null){
-                    catogorylist=new GenresAdapter(filmDetails.getGenres());
-                    recyclerViewcatogorylist.setAdapter(catogorylist);
+
+                @Override
+                public void onFailure(Call<FilmDetails> call, Throwable t) {
+                    Log.e("DetailActivity", "Error fetching movie details", t);
+                    progressBarfilm.setVisibility(View.GONE);
+                    progressBaractor.setVisibility(View.GONE);
                 }
+            });
+        }
+
+        private void bindMovieDetails(FilmDetails filmDetails) {
+            // Load image using Glide
+            Glide.with(this).load(filmDetails.getPosterPath()).into(moviesimage);
+
+            // Set text data
+            title.setText(filmDetails.getTitle());
+            MovieRatTxt.setText(filmDetails.getImdbId());
+            MovieDescTxt.setText(filmDetails.getOverview());
+           // MovieCastInfo.setText(filmDetails.getActors());
+
+            // Bind adapter to RecyclerViews if data is available
 
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBarfilm.setVisibility(View.GONE);
-                progressBaractor.setVisibility(View.GONE);
 
-
-
-            }
-        });
-        mRequestQueue.add(mStringRequest);
-
-    }
+        }
 
     private void initViews() {
-        title=findViewById(R.id.textView_moviename);
-        progressBarfilm=findViewById(R.id.progressBar6);
-        progressBaractor=findViewById(R.id.progressBar5);
+        title = findViewById(R.id.textView_moviename);
+        progressBarfilm = findViewById(R.id.progressBar6);
+        progressBaractor = findViewById(R.id.progressBar5);
+        moviesimage = findViewById(R.id.imageViewPic);
+        nestedScrollView = findViewById(R.id.ScrollViewdetail);
+        MovieRatTxt = findViewById(R.id.textViewstar);
+        MovieDescTxt = findViewById(R.id.textView_summary_description);
+        MovieTime = findViewById(R.id.textViewtime);
+        MovieCastInfo = findViewById(R.id.textView_cast);
+        back = findViewById(R.id.imageBnt_back);
+        favorite = findViewById(R.id.imagebtn_fav);
+        recyclerViewactorlist = findViewById(R.id.recyclerView);
+        recyclerViewcatogorylist = findViewById(R.id.recyclerView2);
 
-        moviesimage=findViewById(R.id.imageViewPic);
-        nestedScrollView=findViewById(R.id.ScrollViewdetail);
-        MovieRatTxt=findViewById(R.id.textViewstar);
-        MovieDescTxt=findViewById(R.id.textView_summary_description);
-        MovieTime=findViewById(R.id.textViewtime);
-        MovieCastInfo=findViewById(R.id.textView_cast);
-        back=findViewById(R.id.imageBnt_back);
-        favorite=findViewById(R.id.imagebtn_fav);
-        MovieCastInfo=findViewById(R.id.textView_actor);
-        recyclerViewactorlist=findViewById(R.id.recyclerView);
-        recyclerViewcatogorylist=findViewById(R.id.recyclerView2);
         recyclerViewactorlist.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewcatogorylist.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
         back.setOnClickListener(v -> finish());
-
-
-
-
     }
 }

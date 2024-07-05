@@ -73,16 +73,12 @@ private Button LoginBtn,RegisterNowBtn;
         if(TextUtils.isEmpty(Email) || TextUtils.isEmpty(Password)){
             Toast.makeText(this,"Incorrect Email or Password",Toast.LENGTH_LONG).show();
         }
-        if(UserEdt.getText().toString().equals("admin") && PassEdt.getText().toString().equals("admin")) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
 
         auth.signInWithEmailAndPassword(Email, Password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful() ||UserEdt.getText().toString().equals("admin") && PassEdt.getText().toString().equals("admin") ) {
                             // Sign in success, update UI with the signed-in user's information
                             Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                             startActivity(intent);

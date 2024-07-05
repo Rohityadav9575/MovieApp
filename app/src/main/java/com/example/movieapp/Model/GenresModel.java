@@ -1,10 +1,10 @@
 package com.example.movieapp.Model;
 
-public class GenersModel {
+public class GenresModel {
     private Integer id;
     private String name;
 
-    public GenersModel(Integer id, String name) {
+    public GenresModel(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
