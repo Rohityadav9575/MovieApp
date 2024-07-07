@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
     Button registerButton;
-    EditText RegEmailEdt,RegPassEdt;
+    EditText RegEmailEdt,RegPassEdt,RegNameEdt;
     TextView goToLogin;
     private FirebaseAuth mAuth;
 
@@ -35,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
         RegEmailEdt = findViewById(R.id.RegEmailEdt);
         RegPassEdt = findViewById(R.id.RegPasswordEdt);
         registerButton = findViewById(R.id.RegisterBtn);
+        RegNameEdt=findViewById(R.id.RegNameEdt);
         mAuth = FirebaseAuth.getInstance();
         registerButton.setOnClickListener(v -> {
         Register();
