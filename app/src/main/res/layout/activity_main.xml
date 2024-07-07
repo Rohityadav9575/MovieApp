@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="18dp"
                     android:layout_marginEnd="16dp"
-                    android:text="Best Movies"
+                    android:text="Upcoming Movies"
                     android:textColor="@color/yellow"
                     android:textSize="20sp" />
 
@@ -145,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="18dp"
                     android:layout_marginEnd="16dp"
-                    android:text="Upcoming Movies"
+                    android:text="Best Movies"
                     android:textColor="@color/yellow"
                     android:textSize="20sp" />
 

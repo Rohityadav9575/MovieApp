@@ -59,35 +59,35 @@
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_margin="0dp"
                     android:text="Discover Your"
                     android:textColor="#FFFFFF"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_margin="0dp"
                     android:text="Favorite Show"
                     android:textColor="@color/orange"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_margin="0dp"
                     android:text="Watch Now or Watch Later"
                     android:textColor="#FFFAFA"
-                    android:textSize="27sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="you can browse movies and shows by gene,search for specific titlte ,or check out our recommendation for you"
+                    android:text="you can browse movies by title ,search for specific title ,or check out our recommendation for you"
                     android:textColor="#9F9A9A"
                     android:textSize="17sp" />
 

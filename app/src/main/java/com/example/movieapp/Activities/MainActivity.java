@@ -1,5 +1,6 @@
 package com.example.movieapp.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,20 +15,11 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.movieapp.Adapter.CategoryAdapter;
 import com.example.movieapp.Adapter.FlimAdapter;
 import com.example.movieapp.Adapter.GenresAdapter;
 import com.example.movieapp.Adapter.SliderAdapter;
-import com.example.movieapp.Model.FilmDetails;
 import com.example.movieapp.Model.FlimList;
-import com.example.movieapp.Model.ImageFetch;
-import com.example.movieapp.Model.Poster;
 import com.example.movieapp.Model.Result;
-
 import com.example.movieapp.Model.SliderModel;
 import com.example.movieapp.R;
 
@@ -47,23 +39,38 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewBestMovies, recyclerViewUpcomingMovies, recyclerViewCategory;
     private ProgressBar progressBar, progressBar2, progressBar3;
     private GenresAdapter genresAdapter;
+    private FlimAdapter bestMoviesAdapter, upcomingMoviesAdapter;
     private TMDbApi tmDbApi;
-    private Handler sliderhandler=new Handler();
-
+    private final Handler sliderHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sliderModelList = new ArrayList<>();
+
+        // Initialize views
         initView();
+
+        // Setup Retrofit and TMDBApi
         setupRetrofit();
-        banner();
+
+        // Initialize adapters
+        genresAdapter = new GenresAdapter(new ArrayList<>());
+        bestMoviesAdapter = new FlimAdapter(new ArrayList<>(), this, tmDbApi);
+        upcomingMoviesAdapter = new FlimAdapter(new ArrayList<>(), this, tmDbApi);
+
+        // Set adapters to RecyclerViews
+        recyclerViewCategory.setAdapter(genresAdapter);
+        recyclerViewBestMovies.setAdapter(bestMoviesAdapter);
+        recyclerViewUpcomingMovies.setAdapter(upcomingMoviesAdapter);
+
+        // Fetch data
         fetchBestMovies();
-        genresAdapter = new GenresAdapter(new ArrayList<>()); // Properly initialize genresAdapter
-        recyclerViewCategory.setAdapter(genresAdapter); // Set the adapter to recyclerViewCategory
         fetchCategories();
         fetchUpcomingMovies();
+
+        // Setup slider
+        setupSlider();
     }
 
     private void setupRetrofit() {
@@ -83,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     FlimList result = response.body();
                     List<Result> movies = result.getResults();
-                    FlimAdapter adapter = new FlimAdapter(movies, MainActivity.this);
-                    recyclerViewBestMovies.setAdapter(adapter);
+                    bestMoviesAdapter.updateMovies(movies);
                 } else {
                     Log.e("MainActivity", "Failed to get best movies");
                 }
@@ -98,18 +104,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
- private void fetchCategories() {
-     progressBar2.setVisibility(View.VISIBLE);
-     tmDbApi.getCategories("c72ae3a243a3fbc3ad44bf91dd5d6843").enqueue(new Callback<GenresResponse>() {
-         @Override
-         public void onResponse(@NonNull Call<GenresResponse> call, @NonNull Response<GenresResponse> response) {
-             if (response.isSuccessful() && response.body() != null) {
-                 genresAdapter.updateGenres(response.body().getGenres());
-             } else {
-                 Log.e("MainActivity", "Failed to get genres");
-             }
-             progressBar2.setVisibility(View.GONE);
-         }
+
+    private void fetchCategories() {
+        progressBar2.setVisibility(View.VISIBLE);
+        tmDbApi.getCategories("c72ae3a243a3fbc3ad44bf91dd5d6843").enqueue(new Callback<GenresResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GenresResponse> call, @NonNull Response<GenresResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    genresAdapter.updateGenres(response.body().getGenres());
+                } else {
+                    Log.e("MainActivity", "Failed to get genres");
+                }
+                progressBar2.setVisibility(View.GONE);
+            }
 
             @Override
             public void onFailure(@NonNull Call<GenresResponse> call, @NonNull Throwable t) {
@@ -127,8 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     FlimList result = response.body();
                     List<Result> movies = result.getResults();
-                    FlimAdapter adapter = new FlimAdapter(movies, MainActivity.this);
-                    recyclerViewUpcomingMovies.setAdapter(adapter);
+                    upcomingMoviesAdapter.updateMovies(movies);
                 } else {
                     Log.e("MainActivity", "Failed to get upcoming movies");
                 }
@@ -143,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    private void banner() {
+    private void setupSlider() {
+        sliderModelList = new ArrayList<>();
         sliderModelList.add(new SliderModel(R.drawable.wide1));
         sliderModelList.add(new SliderModel(R.drawable.wide));
         sliderModelList.add(new SliderModel(R.drawable.wide3));
@@ -152,51 +158,53 @@ public class MainActivity extends AppCompatActivity {
         sliderModelList.add(new SliderModel(R.drawable.slider2));
         sliderModelList.add(new SliderModel(R.drawable.slider3));
 
-        viewPager2.setAdapter(new SliderAdapter(sliderModelList,getApplicationContext(),viewPager2));
-        viewPager2.setClipToPadding(true);
+        viewPager2.setAdapter(new SliderAdapter(sliderModelList, getApplicationContext(), viewPager2));
+        viewPager2.setClipToPadding(false);
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
 
-        CompositePageTransformer compositePageTransformer=new CompositePageTransformer();
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
         compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                float r=1-Math.abs(position);
-                page.setScaleY(0.85f+r*0.15f);
-
-            }
-
-
+        compositePageTransformer.addTransformer((page, position) -> {
+            float r = 1 - Math.abs(position);
+            page.setScaleY(0.85f + r * 0.15f);
         });
         viewPager2.setPageTransformer(compositePageTransformer);
         viewPager2.setCurrentItem(1);
+
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                sliderhandler.removeCallbacks(sliderRunnable);
+                sliderHandler.removeCallbacks(sliderRunnable);
             }
         });
     }
-    private  Runnable sliderRunnable=new Runnable() {
+
+    private final Runnable sliderRunnable = new Runnable() {
         @Override
         public void run() {
-            viewPager2.setCurrentItem(viewPager2.getCurrentItem()+1);
-
+            int currentItem = viewPager2.getCurrentItem();
+            int nextItem = currentItem + 1;
+            if (nextItem >= viewPager2.getAdapter().getItemCount()) {
+                nextItem = 0; // Loop back to the first item
+            }
+            viewPager2.setCurrentItem(nextItem, true); // Set true for smooth scroll
+            sliderHandler.postDelayed(this, 2000); // Schedule the next auto-scroll after 2000ms (2 seconds)
         }
     };
 
     @Override
     protected void onPause() {
         super.onPause();
-        sliderhandler.removeCallbacks(sliderRunnable);
+        sliderHandler.removeCallbacks(sliderRunnable); // Stop auto-scrolling when the activity is paused
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        sliderhandler.postDelayed(sliderRunnable,2000);
+        sliderHandler.postDelayed(sliderRunnable, 2000); // Start auto-scrolling when the activity is resumed
     }
 
     private void initView() {

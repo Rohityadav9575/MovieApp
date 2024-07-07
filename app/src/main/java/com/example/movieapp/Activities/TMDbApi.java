@@ -5,6 +5,7 @@ import com.example.movieapp.Model.FlimList;
 import com.example.movieapp.Model.GenresModel;
 import com.example.movieapp.Model.ImageFetch;
 import com.example.movieapp.Model.Result;
+import com.example.movieapp.Model.VideoModel;
 
 
 import java.util.List;
@@ -41,5 +42,9 @@ public interface TMDbApi {
     );
     @GET("genre/movie/list")
     Call<GenresResponse> getCategories(@Query("api_key") String apiKey);
+
+    @GET("movie/{movie_id}/videos")
+    Call<VideoModel> getMovieTrailerKey(@Path("movie_id") int movieId,
+                                        @Query("api_key") String apiKey);
 
 }

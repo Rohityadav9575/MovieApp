@@ -17,10 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.movieapp.Activities.DetailActivity;
-import com.example.movieapp.Activities.MainActivity;
 import com.example.movieapp.Activities.TMDbApi;
-import com.example.movieapp.Model.FilmDetails;
-import com.example.movieapp.Model.FlimList;
 import com.example.movieapp.Model.ImageFetch;
 import com.example.movieapp.Model.Poster;
 import com.example.movieapp.Model.Result;
@@ -37,12 +34,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
     private List<Result> items;
     private Context context;
+    private TMDbApi tmDbApi;
 
-    private List<Result> flimList;
-
-    public FlimAdapter(List<Result> items, Context context) {
+    public FlimAdapter(List<Result> items, Context context, TMDbApi tmDbApi) {
         this.items = items;
         this.context = context;
+        this.tmDbApi = tmDbApi;
+    }
+
+    public void updateMovies(List<Result> movies) {
+        items.clear();
+        items.addAll(movies);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -63,13 +66,6 @@ public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
 
         String apiKey = "c72ae3a243a3fbc3ad44bf91dd5d6843";
         String imagesUrl = "https://api.themoviedb.org/3/movie/" + movie.getId() + "/images?api_key=" + apiKey;
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/3/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TMDbApi tmDbApi = retrofit.create(TMDbApi.class);
 
         tmDbApi.getMovieImages(movie.getId(), apiKey).enqueue(new Callback<ImageFetch>() {
             @Override
@@ -103,7 +99,6 @@ public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
             }
         });
 
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,11 +114,11 @@ public class FlimAdapter extends RecyclerView.Adapter<FlimAdapter.ViewHolder> {
     public int getItemCount() {
         return items.size();
     }
+
     private String buildImageUrl(String filePath) {
         String baseImageUrl = "https://image.tmdb.org/t/p/w300"; // Adjust size as per your requirement
         return baseImageUrl + filePath;
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
